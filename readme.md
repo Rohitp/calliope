@@ -1,0 +1,1 @@
+trying to write my own GPT2 equivalent LLM from scratch. 
