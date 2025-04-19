@@ -2,7 +2,8 @@ import re
 class Tokenizer():
 
     SPLIT_REGEX = r'([,.:;?_!"()\']|--|\s)'
-    JOIN_REGEX = r'\s+([,.?!"()\'])'
+    JOIN_REGEX = r'\s+([,.:;?!"()\'])'
+    UNKNOWN = "<|unk|>"
 
     def __init__(self, lexicon):
         self.id_lookup = lexicon
@@ -16,7 +17,8 @@ class Tokenizer():
         """
         tokens = re.split(self.SPLIT_REGEX, text)
         tokens = [token.strip() for token in tokens if token.strip()]
-        encoded = [self.id_lookup[token] for token in tokens]
+        encoded = [item if item in self.id_lookup else self.UNKNOWN for item in tokens]
+        encoded = [self.id_lookup[token] for token in encoded]
         return encoded
     
     def decode(self, encoded):
