@@ -1,3 +1,7 @@
+
+# A sample inplementation of a tokeniser
+# This is academic to understand behaviour
+# Tiktoken is a standard BPE implementation that's easier and more convenient to use
 import re
 class Tokenizer():
 
