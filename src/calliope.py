@@ -84,6 +84,8 @@ dataloader = load_data(calliope, tokenizer, BATCH_SIZE, SEQ_LENGTH, WINDOW_SIZE)
 iterable = iter(dataloader)
 source, targets = next(iterable)
 
+print(source)
+
 token_embedding_layer = torch.nn.Embedding(VOCAB_SIZE, EMBEDDING_DIM)
 
 # This is simply a loopup that maps the source token IDs to the embedding layer
