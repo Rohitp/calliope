@@ -12,9 +12,9 @@ from torch.utils.data import DataLoader
 
 
 # To form an embedding matrix from
-# The e,mbedding dimension is the size of the tensor that we use to represent each token
+# The embedding dimension is the size of the tensor that we use to represent each token
 # Can pump up the embedding dimension to 512 or 1024. For reference, the original GPT-2 model used 768
-# Make sire EMBEDDING_DIM % NUM_HEADS == 0
+# Make sure EMBEDDING_DIM % NUM_HEADS == 0
 # NUM_HEADS is the number of attention heads, essentially the number of parallel attention mechanisms that we use to process the input
 VOCAB_SIZE = tiktoken.get_encoding("gpt2").n_vocab
 EMBEDDING_DIM = 256
@@ -25,6 +25,8 @@ NUM_HEADS = 0
 # WINDOW_SIZE = SEQ_LENGTH -> Wasted tokens at the end, but fastest
 # WINDOW_SIZE = 1 -> No wasted data, but slowest
 # WINDOW_SIZE = SEQ_LENGTH / 2 -> Middle ground
+# BATCH_SIZE is the number of sample process at once
+# SEQ_LENGTH is the number of tokens in each sample.
 BATCH_SIZE = 8
 SEQ_LENGTH = 4
 WINDOW_SIZE = 4
@@ -84,8 +86,6 @@ dataloader = load_data(calliope, tokenizer, BATCH_SIZE, SEQ_LENGTH, WINDOW_SIZE)
 iterable = iter(dataloader)
 source, targets = next(iterable)
 
-print(source)
-
 token_embedding_layer = torch.nn.Embedding(VOCAB_SIZE, EMBEDDING_DIM)
 
 # This is simply a loopup that maps the source token IDs to the embedding layer
@@ -104,6 +104,45 @@ positional_embedding = positional_embedding_layer(torch.arange(SEQ_LENGTH))
 
 input_embedding = token_embedding + positional_embedding
 
-print(token_embedding.shape)
-print(positional_embedding.shape)
-print(input_embedding.shape)
+# print(token_embedding.shape)
+# print(positional_embedding.shape)
+# print(input_embedding.shape)
+
+
+# Defining self attention vectors to indicate the importance of each token in the sequence
+# For each token, a self attention vector is like this
+# tokens Hello -> [.678, .123, .456]
+# tokens world -> [.456, .789, .123]
+# tokens cat -> [.123, .456, .789]
+# you take each token and multiply it with the entire corupus, which is the full matrix. 
+# This gives you a scalar for each token
+# A a tensor containing all the token scalars
+# A dot product can be considered as a measure of similarity between two vectors. 
+# The higher the dot product, the more similar the two vectors are.
+# Code like this
+# ============================================
+# weighted_dot = []
+# for i in inputs:
+#     weighted_dot.append(torch.dot(vec, i)) 
+# print(torch.tensor(weighted_dot))
+# ============================================
+
+# Then we Softmax normalises vectord and makes them sum up to 1
+# This also ensures the values are always positive so more useful as probabilities
+# And a mesure of relative importance
+# ============================================
+# normalised = torch.softmax(torch.tensor(weighted_dot), dim=0)
+# ============================================
+# Finally the context vector is the weight sum of the product of the normalised weights and the input vectors
+# ============================================
+# context_vector = torch.zeros(vec.shape)
+# for i, vector in enumerate(inputs):
+#     context_vector+= normalised[i] * vector
+# ============================================
+# We simplify these operations as such -> Attention weights is just multuplying the full matrix with it's transpose
+
+weighted_attention_scores = input_embedding @ input_embedding.T
+normalised_attention_scores = torch.softmax(weighted_attention_scores, dim=-1)
+context_vector = normalised_attention_scores @ input_embedding
+
+# Stupid three lines of code took an evening to fully deep dive and understand
