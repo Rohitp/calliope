@@ -4,6 +4,8 @@ import torch
 # Calculating attention scores
 # After the positoninal embedding dictate the relative positions of the words
 # Attention scores dictate importance
+
+# Checkout -> https://arxiv.org/abs/1706.03762 for multi head reference
 class AttentionScores(nn.Module):
     def __init__(self, d_in, d_out, context_length, num_heads, dropout=0.0, qkv_bias=False):
         super().__init__()
