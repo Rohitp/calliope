@@ -57,24 +57,15 @@ key_dimensions = keys.shape[-1]
 
 attn_weights_2 = torch.softmax(attention_scores_2/key_dimensions**0.5, dim=-1)
 
-torch.manual_seed(789)
-attention_scores = AttentionScores(d_in, d_out)
+torch.manual_seed(123)
 
-queries = attention_scores.W_query(inputs)
-keys = attention_scores.W_key(inputs)
-attention_scores = queries @ keys.T
-attention_weights = torch.softmax(attention_scores/key_dimensions**0.5, dim=-1)
-context_length = attention_scores.shape[0]
-mask = torch.tril(torch.ones(context_length, context_length))
-masked_weights = attention_weights * mask
-attention_weights = torch.softmax(masked_weights/key_dimensions**0.5, dim=-1)
+batch = torch.stack([inputs, inputs], dim=0)
 
-
-
-
-mask = torch.triu(torch.ones(context_length, context_length), diagonal=1)
-masked = attention_scores.masked_fill(mask.bool(), -torch.inf)
-print(masked)
+batch_size, context_length, d_in = batch.shape
+d_out = 2
+attention_scores = AttentionScores(d_in, d_out, context_length, 2)
+print(attention_scores(batch))
+print(attention_scores(batch).shape)
 
 
 
