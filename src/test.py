@@ -1,13 +1,12 @@
 # Dump file for random snippets I need to test 
 
 import torch 
+import tiktoken
 from attention_scores import AttentionScores
+from config import CALLIOPE_CONFIG_124M
+from polymnia import Polymnia
 
 
-test = torch.rand(3, 5)
-
-test1 = torch.arange(5)
-test3 = torch.ones(5)
 
 
 inputs = torch.tensor([
@@ -19,59 +18,33 @@ inputs = torch.tensor([
     [0.05, 0.80, 0.55]
 ])
 
-# A dot product can be considered as a measure of similarity between two vectors. 
-# The higher the dot product, the more similar the two vectors are.
-# print(torch.dot(test1, test1))
 
 
-# Softmax normalises vectord and makes them sum up to 1
-# This also ensures the values are always positive so more useful as probabilities
-# And a mesure of relative importance
-# print(torch.softmax(test, dim=0))
+x = [1,2, 3]
 
+diction = {
+    "name": "Alice",
+    "age": 30,
+}
 
-x_2 = inputs[1]
-weighted_dot = []
-d_in = inputs.shape[1]
-print(d_in)
-d_out = 2
+def add(a, b, c):
+    return a + b + c
 
-torch.manual_seed(123)
-W_query = torch.nn.Parameter(torch.randn(d_in, d_out), requires_grad=False)
-W_key = torch.nn.Parameter(torch.randn(d_in, d_out), requires_grad=False)
-W_value = torch.nn.Parameter(torch.randn(d_in, d_out), requires_grad=False)
+def print_u(name, age):
+    print(f"{name} is {age} years old")
 
+print(add(*x))
+print_u(**diction)
 
-query_2 = x_2 @ W_query
-key_2 = x_2 @ W_key
-value_2 = x_2 @ W_value
-
-
-queries = inputs @ W_query
-keys = inputs @ W_key
-values = inputs @ W_value
-
-
-attention_scores_2 = query_2 @ keys.T
-key_dimensions = keys.shape[-1]
-
-attn_weights_2 = torch.softmax(attention_scores_2/key_dimensions**0.5, dim=-1)
+tokenizer = tiktoken.get_encoding("gpt2")
+batch = []
+for i in ["Every effort moves you", "every day holds a"]:
+    batch.append( torch.tensor(tokenizer.encode(i)))
+batch = torch.stack(batch, dim=0)
 
 torch.manual_seed(123)
-
-batch = torch.stack([inputs, inputs], dim=0)
-
-batch_size, context_length, d_in = batch.shape
-d_out = 2
-attention_scores = AttentionScores(d_in, d_out, context_length, 2)
-print(attention_scores(batch))
-print(attention_scores(batch).shape)
-
-
-
-
-
-
-
-
+model = Polymnia(CALLIOPE_CONFIG_124M)
+logits = model(batch)
+# print(logits.shape)
+# print(logits)   
 
