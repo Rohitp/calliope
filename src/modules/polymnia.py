@@ -57,6 +57,10 @@ class PolymniaTransformerBlock(nn.Module):
 # And this helps keep results predictable
 # For example take weights of -> [0.22, 0.34, 0.00, 0,22, 0,00] -> mean: 0.13, variance: 0.39
 # Normalise to -> [0.61, 1.41, -0.87, 0.58, -0.87, -0.87] -> mean: 0, variance: 1
+
+
+# Also we use layer normalization instead of batch normaization (which is used in CNNs),
+# this way we can choose batch size dynamically as per hardware requirements
 class PolymniaLayerNorm(nn.Module):
     def __init__(self, emb_dim):
         super().__init__()

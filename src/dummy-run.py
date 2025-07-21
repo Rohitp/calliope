@@ -3,9 +3,9 @@
 import torch 
 import torch.nn as nn
 import tiktoken
-from attention_scores import AttentionScores
+from modules.attention_scores import AttentionScores
 from config import CALLIOPE_CONFIG_124M
-from polymnia import Polymnia, PolymniaTransformerBlock, PolymniaLayerNorm
+from modules.polymnia import Polymnia, PolymniaTransformerBlock, PolymniaLayerNorm
 
 
 
@@ -38,12 +38,13 @@ batch_example = torch.randn(2, 5)
 layer = nn.Sequential(nn.Linear(5, 6), nn.ReLU())
 
 
-# out = layer(batch_example)
+
+out = layer(batch_example)
+print(out)
 
 
 ln = PolymniaLayerNorm(emb_dim=5)
 output = ln(batch_example)
-print(output)
 mean_p = output.mean(dim=-1, keepdim=True)
 var_p = output.var(dim=-1, unbiased=False, keepdim=True)
 print(mean_p)

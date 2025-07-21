@@ -3,8 +3,8 @@
 
 
 import re
-from tokenizer import Tokenizer
-from dataset import CalliopeDataset
+from modules.tokenizer import Tokenizer
+from tools.dataset import CalliopeDataset
 import tiktoken
 import torch
 from torch.utils.data import DataLoader
