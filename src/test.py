@@ -1,10 +1,11 @@
 # Dump file for random snippets I need to test 
 
 import torch 
+import torch.nn as nn
 import tiktoken
 from attention_scores import AttentionScores
 from config import CALLIOPE_CONFIG_124M
-from polymnia import Polymnia
+from polymnia import Polymnia, PolymniaTransformerBlock, PolymniaLayerNorm
 
 
 
@@ -20,21 +21,7 @@ inputs = torch.tensor([
 
 
 
-x = [1,2, 3]
 
-diction = {
-    "name": "Alice",
-    "age": 30,
-}
-
-def add(a, b, c):
-    return a + b + c
-
-def print_u(name, age):
-    print(f"{name} is {age} years old")
-
-print(add(*x))
-print_u(**diction)
 
 tokenizer = tiktoken.get_encoding("gpt2")
 batch = []
@@ -43,8 +30,21 @@ for i in ["Every effort moves you", "every day holds a"]:
 batch = torch.stack(batch, dim=0)
 
 torch.manual_seed(123)
-model = Polymnia(CALLIOPE_CONFIG_124M)
-logits = model(batch)
-# print(logits.shape)
-# print(logits)   
+# model = Polymnia(CALLIOPE_CONFIG_124M)
+# logits = model(batch)
 
+
+batch_example = torch.randn(2, 5)
+layer = nn.Sequential(nn.Linear(5, 6), nn.ReLU())
+
+
+# out = layer(batch_example)
+
+
+ln = PolymniaLayerNorm(emb_dim=5)
+output = ln(batch_example)
+print(output)
+mean_p = output.mean(dim=-1, keepdim=True)
+var_p = output.var(dim=-1, unbiased=False, keepdim=True)
+print(mean_p)
+print(var_p)
