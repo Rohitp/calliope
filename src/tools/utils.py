@@ -30,3 +30,27 @@ class FeedForward(nn.Module):
 
     def forward(self, x):
         return self.layers(x)
+    
+
+# indexes = indexes in current context, its shape is (batch, n_tokens)
+# max_new tokens = number of tokens we want
+# context_size = size of the context we're setting
+
+def generate_text(model, indexes, max_new_tokens, context_size):
+    for _ in range(max_new_tokens):
+
+        # truncate context to the max context size
+        indexes_cond = indexes[:, -context_size:]  # Get the last context_size tokens
+        with torch.no_grad():
+            logits = model(indexes_cond)
+        
+        logits = logits[:, -1, :]  # Get the logits for the last token
+
+        # we don't need to apply softmax here, because we just want the most probable next token
+        # did it anyway
+        probabilities = torch.softmax(logits, dim=-1)
+
+        # arg max returns the index of the highest probability token
+        next = torch.argmax(probabilities, dim=-1, keepdim=True)  # Get the most probable next token
+        indexes = torch.cat((indexes, next), dim=1) # Append the new token to the sequence
+    return indexes

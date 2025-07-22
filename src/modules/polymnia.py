@@ -17,6 +17,10 @@ class Polymnia(nn.Module):
         self.transformer_blocks = nn.Sequential(*[Optimus(config) for _ in range(config['n_layers'])])
 
         self.final_layer_norm = PolymniaLayerNorm(config['emb_dim'])
+
+        # This is the final layer that takes the transformers internal representation 
+        # and converts it to logits in the vocabulary space. 
+        # This is why this is the size of the vocabulary
         self.out_head = nn.Linear(config['emb_dim'], config['vocab_size'], bias=False)
 
       
