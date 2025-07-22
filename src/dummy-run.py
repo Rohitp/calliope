@@ -2,11 +2,9 @@
 
 import torch 
 import torch.nn as nn
-import tiktoken
-from modules.attention_scores import AttentionScores
-from config import CALLIOPE_CONFIG_124M
-from modules.polymnia import Polymnia, PolymniaTransformerBlock, PolymniaLayerNorm
-from tools.utils import GELU, FeedForward
+from tools.config import CALLIOPE_CONFIG_124M
+from tools.utils import GELU
+from modules.optimus import Optimus
 
 
 torch.manual_seed(123)
@@ -72,3 +70,10 @@ sample_input = torch.tensor([[1., 0., -1.]])
 # test_gradients(model_with_shortcut, sample_input.clone().detach())
 # print("Testing model without shortcut connections:")
 # test_gradients(model_without_shortcut, sample_input.clone().detach())
+
+
+torch.manual_seed(123)
+x = torch.rand(2, 4, 768)
+block = Optimus(CALLIOPE_CONFIG_124M)
+output = block(x)
+print("Output shape:", output.shape)

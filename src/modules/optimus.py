@@ -1,12 +1,10 @@
 # okay, I started with classy and elegant greek muses for names
 # but when it came time to name the transformer, I just went with OPTIMUS PRIME
 
-import torch
 import torch.nn as nn
 from modules.attention_scores import AttentionScores
-from modules.polymnia import PolymniaLayerNorm
-from tools.utils import GELU, FeedForward
-from tools.config import CALLIOPE_CONFIG_124M
+from tools.normaliser import PolymniaLayerNorm
+from tools.utils import FeedForward
 
 
 # A transformeer combines multi head attention with a feed forward network.
