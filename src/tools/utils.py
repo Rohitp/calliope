@@ -70,6 +70,11 @@ def generate_text(model, indexes, max_new_tokens, context_size):
 
 # We try and reduce this negative value to 0 by backpropagation
 # We just call the inbuilt function here
+
+# Side note taking this one step further gives us perplexity 
+# which is a measure of how well the model predicts the next token in the sequence
+# it's torch.exp(loss).
+# if perplexity is 45678, it means the model is unsure of which of the 45678 tokens to predict next
 def cross_entropy_loss(input, target, model, device):
     input = input.to(device)
     target = target.to(device)
