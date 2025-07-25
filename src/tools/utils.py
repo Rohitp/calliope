@@ -55,3 +55,50 @@ def generate_text(model, indexes, max_new_tokens, context_size):
         next = torch.argmax(probabilities, dim=-1, keepdim=True)  # Get the most probable next token
         indexes = torch.cat((indexes, next), dim=1) # Append the new token to the sequence
     return indexes
+
+
+
+# Cross entropy loss is a measure of how well the model's predicted probabilities match the true labels
+# it's the difference between two probability distributions, the inputs and the targets
+# How you do this is 
+# 1. You take some logits ->  logits = model(inputs)
+# 2. Apply softmax and get probabilities -> probabilities = softmax(logits)
+# 3. Get target probabilities -> targets = probabilities[target_indexes]
+# 4. Convert them to log probabilities -> torch.log(targets)
+# 5. Take the mean of it -> loss = torch.mean(log_probs)
+# 6. Make it negative -> loss = -loss
+
+# We try and reduce this negative value to 0 by backpropagation
+# We just call the inbuilt function here
+def cross_entropy_loss(input, target, model, device):
+    input = input.to(device)
+    target = target.to(device)
+    logits = model(input)
+    loss = nn.functional.cross_entropy(logits.flatten(0, 1), target.flatten())
+    return loss
+
+
+
+# This just iteates over all batches and accumulates the loss and returns it
+def calc_loss_loader(dataloader, model, device, num_batches=None):
+    total_loss = 0.0
+
+
+    if(len(dataloader) == 0):
+        return float('nan')
+    
+    # If batch size is not specified, we use the entire dataset
+    elif num_batches is None:
+        num_batches = len(dataloader)
+    else:
+        num_batches = min(num_batches, len(dataloader))
+
+
+    for(i, (inputs, targets)) in enumerate(dataloader):
+        if i < num_batches:
+            loss = cross_entropy_loss(inputs, targets, model, device)
+            total_loss += loss.item()
+        else:
+            break
+        
+    return total_loss / num_batches
