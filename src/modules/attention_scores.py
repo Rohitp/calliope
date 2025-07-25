@@ -128,6 +128,39 @@ class AttentionScores(nn.Module):
         # We apply dropout to the attention weights
         attention_weights = self.dropout(attention_weights)
 
+
+        # Defining self attention vectors to indicate the importance of each token in the sequence
+        # For each token, a self attention vector is like this
+        # tokens Hello -> [.678, .123, .456]
+        # tokens world -> [.456, .789, .123]
+        # tokens cat -> [.123, .456, .789]
+        # you take each token and multiply it with the entire corupus, which is the full matrix. 
+        # This gives you a scalar for each token
+        # A a tensor containing all the token scalars
+        # A dot product can be considered as a measure of similarity between two vectors. 
+        # The higher the dot product, the more similar the two vectors are.
+        # Code like this
+        # ============================================
+        # weighted_dot = []
+        # for i in inputs:
+        #     weighted_dot.append(torch.dot(vec, i)) 
+        # print(torch.tensor(weighted_dot))
+        # ============================================
+
+        # Then we Softmax normalises vectord and makes them sum up to 1
+        # This also ensures the values are always positive so more useful as probabilities
+        # And a mesure of relative importance
+        # ============================================
+        # normalised = torch.softmax(torch.tensor(weighted_dot), dim=0)
+        # ============================================
+        # Finally the context vector is the weight sum of the product of the normalised weights and the input vectors
+        # ============================================
+        # context_vector = torch.zeros(vec.shape)
+        # for i, vector in enumerate(inputs):
+        #     context_vector+= normalised[i] * vector
+        # ============================================
+        # We simplify these operations as such -> Attention weights is just multuplying the full matrix with it's transpose
+
         context_vector = (attention_weights @ values).transpose(1, 2)
         context_vector = context_vector.contiguous().view(b, num_tokens, self.d_out)
         context_vector = self.out_projection(context_vector)

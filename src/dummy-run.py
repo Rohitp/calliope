@@ -76,6 +76,15 @@ sample_input = torch.tensor([[1., 0., -1.]])
 # test_gradients(model_without_shortcut, sample_input.clone().detach())
 
 
+def text_to_token_ids(text, tokenizer):
+    encoded = tokenizer.encode(text, allowed_special={'<|endoftext|>'})
+    encoded_tensor = torch.tensor(encoded).unsqueeze(0)
+    return encoded_tensor
+
+def token_ids_to_text(token_ids, tokenizer):
+    flat = token_ids.squeeze(0)
+    return tokenizer.decode(flat.tolist())
+
 tokenizer = tiktoken.get_encoding("gpt2")
 
 batch = []
@@ -91,26 +100,13 @@ batch = torch.stack(batch, dim=0)
 
 start_context = "Hello, I am"
 
-encoded = tokenizer.encode(start_context)
-print("encoded:", encoded)
 
-encoded_tensor = torch.tensor(encoded).unsqueeze(0)
 
 torch.manual_seed(123)
 model = Polymnia(CALLIOPE_CONFIG_124M)
-# output = model(batch)
-# print("Input batch:\n", batch)
-# print("\nOutput shape:", output.shape)
-# print(output)
-
-# disable dropout for deterministic output
 model.eval()
 
-out = generate_text(model, encoded_tensor, max_new_tokens=6, context_size=CALLIOPE_CONFIG_124M["context_length"])
+out = generate_text(model, text_to_token_ids(start_context, tokenizer), max_new_tokens=10, context_size=CALLIOPE_CONFIG_124M["context_length"])
 
-print("Output:", out)
-print("Output length:", len(out[0]))
-
-decoded_text = tokenizer.decode(out.squeeze(0).tolist())
-print(decoded_text)
+print(token_ids_to_text(out, tokenizer))
 

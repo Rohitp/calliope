@@ -11,6 +11,12 @@ class Polymnia(nn.Module):
         super().__init__()
 
         self.token_embedding_layer = nn.Embedding(config['vocab_size'], config['emb_dim'])
+
+        # GPT2 uses an assolute positioning layer to save positioning information
+        # This is a standard multiplier that is applied to the token embedding
+        # Without this, [hello, world] and [world, hello] would be the same
+        # Or more weirdly, the cat sat and cat the sat would be same
+        # https://www.lesswrong.com/posts/qvWP3aBDBaqXvPNhS/gpt-2-s-positional-embedding-matrix-is-a-helix
         self.positional_embedding_layer = nn.Embedding(config['context_length'], config['emb_dim'])
         self.dropout = nn.Dropout(config['drop_rate'])
 

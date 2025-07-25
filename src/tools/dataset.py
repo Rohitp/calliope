@@ -1,5 +1,6 @@
 import torch 
 from torch.utils.data import Dataset
+import tiktoken
 
 # https://pytorch.org/tutorials/beginner/basics/data_tutorial.html
 # For easy iteration of the data
@@ -34,4 +35,21 @@ class CalliopeDataset(Dataset):
 
     def __getitem__(self, index):
         return self.sources[index], self.targets[index]
+    
+
+
+def create_dataloader(text, batch_size = 4, max_length = 256, stride = 128, shuffle = True, drop_last = True, num_workers = 0):
+
+    tokenizer = tiktoken.get_encoding("gpt2")
+    dataset = CalliopeDataset(text, tokenizer, max_length, stride)
+    
+
+    # batch_size is the number of tuples that we work on (seq_length is the number of tokens in each tuple)
+    # shuffle randomises the order of the tuples to prevent overfitting. We don't want to shuffle, we want to preserve the order of the text
+    # drop_last drops the last batch if it's not full 
+    # num_workers is the number of threads to use for loading the data. 
+    # Recommendation is to use os.cpu_count() / 2 for this.
+    # All there parameters seem to be hyper specific and tweaking this to get results is paramount
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+    return dataloader
 

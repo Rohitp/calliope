@@ -50,6 +50,7 @@ def generate_text(model, indexes, max_new_tokens, context_size):
         # did it anyway
         probabilities = torch.softmax(logits, dim=-1)
 
+
         # arg max returns the index of the highest probability token
         next = torch.argmax(probabilities, dim=-1, keepdim=True)  # Get the most probable next token
         indexes = torch.cat((indexes, next), dim=1) # Append the new token to the sequence
