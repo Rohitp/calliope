@@ -12,3 +12,7 @@ The total memory needed = 621.83MB, assuming each parameter needs 4 bytes
 
 
 For larger models, need to udnerstand how they train - gradient checkpointing and model parallelism? For a 175B model just the weights become 700mb
+
+
+LLama 2 is a major inspiration -> https://arxiv.org/abs/2307.09288
+Alpaca for instruction fine tuning -> https://crfm.stanford.edu/2023/03/13/alpaca.html
