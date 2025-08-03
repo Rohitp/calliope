@@ -7,7 +7,7 @@ from tools.utils import GELU
 from modules.optimus import Optimus
 from modules.polymnia import Polymnia
 import tiktoken
-from tools.utils import generate_text
+from tools.utils import generate_text, text_to_token_ids, token_ids_to_text
 
 
 
@@ -76,14 +76,7 @@ sample_input = torch.tensor([[1., 0., -1.]])
 # test_gradients(model_without_shortcut, sample_input.clone().detach())
 
 
-def text_to_token_ids(text, tokenizer):
-    encoded = tokenizer.encode(text, allowed_special={'<|endoftext|>'})
-    encoded_tensor = torch.tensor(encoded).unsqueeze(0)
-    return encoded_tensor
 
-def token_ids_to_text(token_ids, tokenizer):
-    flat = token_ids.squeeze(0)
-    return tokenizer.decode(flat.tolist())
 
 tokenizer = tiktoken.get_encoding("gpt2")
 
