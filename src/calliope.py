@@ -5,6 +5,7 @@ from tools.config import CALLIOPE_CONFIG_124M
 from tools.utils import calc_loss_loader
 from modules.polymnia import Polymnia
 from train.train_utils import train_model
+from plot.loss_epoch import plot_losses
 import tiktoken
 
 
@@ -46,5 +47,8 @@ tokenizer = tiktoken.get_encoding("gpt2")
 
 train_losses, val_losses, tokens_seen = train_model(model, train_loader, val_loader, optimizer, device, num_epochs=10, eval_freq=5, eval_iter=5, start_context="Hello, I am", tokenizer=tokenizer)
 
+
+epochs_tensor = torch.linspace(0, 10, len(train_losses))
+plot_losses(epochs_tensor, tokens_seen, train_losses, val_losses)
 
 

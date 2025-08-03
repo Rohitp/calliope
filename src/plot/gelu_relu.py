@@ -2,7 +2,7 @@
 
 import torch
 import torch.nn as nn
-from utils import GELU
+from tools.utils import GELU
 import matplotlib.pyplot as plt
 
 gelu = GELU()
