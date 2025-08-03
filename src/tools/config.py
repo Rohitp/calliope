@@ -10,4 +10,6 @@ CALLIOPE_CONFIG_124M = {
 "qkv_bias": False, # Query-Key-Value bias, seems like this is always false in most modern architectures.
 "learning_rate": 0.001, # Learning rate. Need to change this later to somethig like 3e-4
 "weight_decay": 0.1, # Weight decay for AdamW optimizer, change it later to something like 1e-1
+"temperature": 1.4, # Temperature -> higher temperature means more random, lower temperature means more deterministic
+"top_k": 25, # Top-k sampling -> limits the number of samples you pick
 }

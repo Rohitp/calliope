@@ -36,7 +36,7 @@ class FeedForward(nn.Module):
 # max_new tokens = number of tokens we want
 # context_size = size of the context we're setting
 
-def generate_text(model, indexes, max_new_tokens, context_size):
+def generate_text(model, indexes, max_new_tokens, context_size, temperature=0.0, top_k=None, eos_id=None ):
     for _ in range(max_new_tokens):
 
         # truncate context to the max context size
@@ -46,13 +46,42 @@ def generate_text(model, indexes, max_new_tokens, context_size):
         
         logits = logits[:, -1, :]  # Get the logits for the last token
 
-        # we don't need to apply softmax here, because we just want the most probable next token
-        # did it anyway
-        probabilities = torch.softmax(logits, dim=-1)
 
 
-        # arg max returns the index of the highest probability token
-        next = torch.argmax(probabilities, dim=-1, keepdim=True)  # Get the most probable next token
+        # Top-k sampling is a technique to limit the number of samples you pick your next word from
+        # What we do naively is that we get a list of logits, comvert them to probabilites with softmax and then take 
+        # The highest one. This goes in conjunction with temperature
+        # Almost a necessity with temperature or the mode will have too much variance
+        if top_k is not None:
+            top_k_logits, top_k_indices = torch.topk(logits, top_k)
+            min_val = top_k_logits[:, -1, None]
+            logits = torch.where(logits < min_val, torch.tensor(float('-inf')).to(logits.device), logits)
+
+
+
+
+
+        # Temperature is a hyperparameter that controls the randomness of the predictions
+        # A higher temperature means more randomness, a lower temperature means more deterministic
+        # with temperature, instead of argmax we take a nultinomial. 
+        # Essentially if we get [0.2, 0.3, 0.5], rather than just taking the 0.5, we probabilistically give a chance for the others as well
+        # Used in conjunction with top-k sampling
+        # If temperature is 0, we just take the argmax of the logits
+        if temperature > 0.0:
+            logits = logits / temperature
+            probabilities = torch.softmax(logits, dim=-1)
+            next = torch.multinomial(probabilities, num_samples=1)
+        else:
+            # we don't need to apply softmax here, because we just want the most probable next token
+            # did it anyway
+            probabilities = torch.softmax(logits, dim=-1)
+
+            # arg max returns the index of the highest probability token
+            next = torch.argmax(probabilities, dim=-1, keepdim=True)
+
+        if next == eos_id:
+            break
+
         indexes = torch.cat((indexes, next), dim=1) # Append the new token to the sequence
     return indexes
 
