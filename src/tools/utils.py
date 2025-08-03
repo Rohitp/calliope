@@ -149,3 +149,13 @@ def text_to_token_ids(text, tokenizer):
 def token_ids_to_text(token_ids, tokenizer):
     flat = token_ids.squeeze(0)
     return tokenizer.decode(flat.tolist())
+
+
+
+
+# A simple function to make sure the left and right tensors have the same shape
+# If yes, returns the right tensor for training
+def assign(left, right):
+    if left.shape != right.shape:
+        raise ValueError(f"Shape mismatch: {left.shape} != {right.shape}")
+    return torch.nn.Parameter(torch.tensor(right))

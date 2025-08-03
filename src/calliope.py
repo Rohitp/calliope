@@ -1,12 +1,14 @@
 import torch
 import torch.nn as nn
 from tools.dataset import create_dataloader
-from tools.config import CALLIOPE_CONFIG_124M
+from tools.config import CALLIOPE_CONFIG_124M, model_configs
 from tools.utils import calc_loss_loader
 from modules.polymnia import Polymnia
 from train.train_utils import train_model
 from plot.loss_epoch import plot_losses
+from tools.gpt_get_weights import download_and_load_gpt
 import tiktoken
+
 
 
 with open("../text/alice.txt", "r", encoding="utf-8") as f:
@@ -21,7 +23,11 @@ val_data = text[split_index:]
 
 torch.manual_seed(123)
 
-model = Polymnia(CALLIOPE_CONFIG_124M)
+model_name = "gpt2-small-124M" # Change this to the desired model size
+MODEL_CONFIG = CALLIOPE_CONFIG_124M.copy()
+MODEL_CONFIG.update(model_configs[model_name])
+
+model = Polymnia(MODEL_CONFIG)
 model.eval()
 
 train_loader = create_dataloader(train_data, batch_size=2, max_length=CALLIOPE_CONFIG_124M["context_length"], stride=CALLIOPE_CONFIG_124M["context_length"])
@@ -44,11 +50,17 @@ optimizer = torch.optim.AdamW(model.parameters(), lr=CALLIOPE_CONFIG_124M["learn
 tokenizer = tiktoken.get_encoding("gpt2")
 
 
+# Load params and test
+params = {}
 
-train_losses, val_losses, tokens_seen = train_model(model, train_loader, val_loader, optimizer, device, num_epochs=10, eval_freq=5, eval_iter=5, start_context="Hello, I am", tokenizer=tokenizer)
+download_and_load_gpt(model, params)
+
+# for name, param in model.named_parameters():
+#     print(f"{name}: {param.shape} ({param.numel():,} params)")
 
 
-epochs_tensor = torch.linspace(0, 10, len(train_losses))
-plot_losses(epochs_tensor, tokens_seen, train_losses, val_losses)
+
+
+
 
 
