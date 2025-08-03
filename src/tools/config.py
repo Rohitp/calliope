@@ -7,5 +7,7 @@ CALLIOPE_CONFIG_124M = {
 "n_heads": 12, # Number of attention heads
 "n_layers": 12, # Number of layers, this is also the number of transformer blocks
 "drop_rate": 0.1, # Dropout rate
-"qkv_bias": False # Query-Key-Value bias, seems like this is always false in most modern architectures.
+"qkv_bias": False, # Query-Key-Value bias, seems like this is always false in most modern architectures.
+"learning_rate": 0.004, # Learning rate. Need to change this later to somethig like 6e-4
+"weight_decay": 0.1, # Weight decay for AdamW optimizer, change it later to something like 1e-1
 }
