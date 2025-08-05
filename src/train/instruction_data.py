@@ -36,10 +36,15 @@ class TrainData(Dataset):
 def collate(batch, padding=50256, device='cpu'):
     batch_max = max([len(item) for item in batch])
     inputs = []
+    outputs = []
 
     for item in batch:
         padded = item + [padding] * (batch_max - len(item))
         inputs.append(torch.tensor(padded))
+        # We do this to shift the input by one token to get the output
+        padded += [padding] 
+        outputs.append(torch.tensor(padded[1:]))
 
-    result = torch.stack(inputs, dim=0).to(device)
-    return result
+    input_result = torch.stack(inputs, dim=0).to(device)
+    output_result = torch.stack(outputs, dim=0).to(device)
+    return input_result, output_result

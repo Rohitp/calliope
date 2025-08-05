@@ -22,5 +22,6 @@ inputs_1 = [0, 1, 2, 3, 4]
 inputs_2 = [5, 6]
 inputs_3 = [7, 8, 9]
 batch = (inputs_1, inputs_2, inputs_3)
-result = collate(batch)
-print(result)
+input_res, output_res = collate(batch)
+print(input_res)
+print(output_res)
