@@ -8,8 +8,8 @@ from modules.optimus import Optimus
 from modules.polymnia import Polymnia
 import tiktoken
 from tools.utils import generate_text, text_to_token_ids, token_ids_to_text
-
-
+from train.train_utils import finetune_helper
+import json
 
 torch.manual_seed(123)
 
@@ -80,26 +80,12 @@ sample_input = torch.tensor([[1., 0., -1.]])
 
 tokenizer = tiktoken.get_encoding("gpt2")
 
-batch = []
+with open("./train/data/instructions-finetune.json","r") as f:
+    data = json.load(f)
 
-txt1 = "Every effort moves you"
-txt2 = "Every day holds a"
 
-batch.append(torch.tensor(tokenizer.encode(txt1)))
-batch.append(torch.tensor(tokenizer.encode(txt2)))
-batch = torch.stack(batch, dim=0)
+print(finetune_helper(data[4]))
 
 
 
-start_context = "Hello, I am"
-
-
-
-torch.manual_seed(123)
-model = Polymnia(CALLIOPE_CONFIG_124M)
-model.eval()
-
-out = generate_text(model, text_to_token_ids(start_context, tokenizer), max_new_tokens=10, context_size=CALLIOPE_CONFIG_124M["context_length"])
-
-print(token_ids_to_text(out, tokenizer))
 

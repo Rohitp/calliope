@@ -103,3 +103,18 @@ def gen_sample(model, tokenizer, device, start_context):
     print(f"Generated text: {decoded}")
     model.train()
 
+
+
+# A formatting function to take the instruction inputs for fine tuning
+
+def finetune_helper(data):
+    instructions = (
+        f"What follows are instructions that describe a task. "
+        f"Write a response that appropriately completes the request. "
+        f"\n\n### Instruction:\n{data['instruction']}\n\n"
+    )
+
+    input_text = (f"\n\n ###Input: \n{data['input']}" if data['input'] else "")
+
+    return instructions + input_text
+

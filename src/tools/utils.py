@@ -35,7 +35,7 @@ class FeedForward(nn.Module):
 # indexes = indexes in current context, its shape is (batch, n_tokens)
 # max_new tokens = number of tokens we want
 # context_size = size of the context we're setting
-
+# eos_id = 50256  GPT-2's end of sequence token ID, used for EOS in generation
 def generate_text(model, indexes, max_new_tokens, context_size, temperature=0.0, top_k=None, eos_id=None ):
     for _ in range(max_new_tokens):
 
@@ -70,19 +70,19 @@ def generate_text(model, indexes, max_new_tokens, context_size, temperature=0.0,
         if temperature > 0.0:
             logits = logits / temperature
             probabilities = torch.softmax(logits, dim=-1)
-            next = torch.multinomial(probabilities, num_samples=1)
+            next_val = torch.multinomial(probabilities, num_samples=1)
         else:
             # we don't need to apply softmax here, because we just want the most probable next token
             # did it anyway
             probabilities = torch.softmax(logits, dim=-1)
 
             # arg max returns the index of the highest probability token
-            next = torch.argmax(probabilities, dim=-1, keepdim=True)
+            next_val = torch.argmax(probabilities, dim=-1, keepdim=True)
 
-        if next == eos_id:
+        if next_val == eos_id:
             break
 
-        indexes = torch.cat((indexes, next), dim=1) # Append the new token to the sequence
+        indexes = torch.cat((indexes, next_val), dim=1) # Append the new token to the sequence
     return indexes
 
 
