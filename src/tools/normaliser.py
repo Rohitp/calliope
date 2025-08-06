@@ -16,7 +16,7 @@ class PolymniaLayerNorm(nn.Module):
         # Very small value to prevent division by zero. This is so small that it doesn't affect the results
         self.epsilon = 1e-5
         # These are learnable parameters that scale and shift the normalized values
-        # During training we train these as well to best adjust values
+        # During training we train these as well to best adjust values. This is automatically trained and adjusted.
         # GPT architecture uses them, so do we
         self.scale = nn.Parameter(torch.ones(emb_dim))
         self.shift = nn.Parameter(torch.zeros(emb_dim))

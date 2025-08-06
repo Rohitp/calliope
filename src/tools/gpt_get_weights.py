@@ -11,8 +11,8 @@ import tensorflow as tf
 from tqdm import tqdm
 
 import json 
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+# import tensorflow.compat.v1 as tf
+# tf.disable_v2_behavior()
 import os
 
 

@@ -34,6 +34,9 @@ model.eval()
 train_loader = create_dataloader(train_data, batch_size=2, max_length=MODEL_CONFIG["context_length"], stride=MODEL_CONFIG["context_length"])
 val_loader = create_dataloader(val_data, batch_size=2, max_length=MODEL_CONFIG["context_length"], stride=MODEL_CONFIG["context_length"], shuffle=False, drop_last=False)    
 
+# device can also be "mps" for Apple Silicon Macs
+# MPS -> Metal Performance Shaders, which is a framework for GPU-accelerated computing on Apple devices
+#https://docs.pytorch.org/docs/stable/notes/mps.html
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # The learning rate is how big a step the optimiser takes after modifying the weights each batch 

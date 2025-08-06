@@ -26,8 +26,11 @@ class Optimus(nn.Module):
 
     def forward(self, x):
 
-        # Shortcut here doesn't mean skip connection, it means to not just pass the output
-        # but to keep the input as well
+
+        # We short cut because the gradients become very small as they propagate backward.
+        # This is the vanishing gradient problem -> https://en.wikipedia.org/wiki/Vanishing_gradient_problem
+        # Shortcut here doesn't mean literall skip connection, it means to not just pass the output
+        # but to keep the input as well. That is the output of one layer is added to the output of another layer, which is increases the gradient again
         # we only shortcut when the input and output shapes match
 
         # Here in the forward pass we apply attention, and feed forward

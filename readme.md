@@ -16,3 +16,5 @@ For larger models, need to udnerstand how they train - gradient checkpointing an
 
 LLama 2 is a major inspiration -> https://arxiv.org/abs/2307.09288
 Alpaca for instruction fine tuning -> https://crfm.stanford.edu/2023/03/13/alpaca.html
+
+Dataset used -> https://raw.githubusercontent.com/tatsu-lab/stanford_alpaca/main/alpaca_data.json

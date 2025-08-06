@@ -63,28 +63,7 @@ def reset_weights(model):
         if isinstance(layer, nn.Linear):
             layer.reset_parameters()
 
-layer_sizes = [3, 3, 3, 3, 3, 1]
-sample_input = torch.tensor([[1., 0., -1.]])
 
-# model_without_shortcut = SampleNN(layer_sizes, use_shortcut=False)
-# torch.manual_seed(123)  # Reset seed for reproducibility
-# model_with_shortcut = SampleNN(layer_sizes, use_shortcut=True)
-
-# print("Testing model with shortcut connections:")
-# test_gradients(model_with_shortcut, sample_input.clone().detach())
-# print("Testing model without shortcut connections:")
-# test_gradients(model_without_shortcut, sample_input.clone().detach())
-
-
-
-
-tokenizer = tiktoken.get_encoding("gpt2")
-
-with open("./train/data/instructions-finetune.json","r") as f:
-    data = json.load(f)
-
-
-print(finetune_helper(data[4]))
 
 
 
