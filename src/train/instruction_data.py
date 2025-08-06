@@ -67,3 +67,37 @@ def collate(batch, padding=50256, device='cpu', max_length=None, mask_value=-100
     input_result = torch.stack(inputs, dim=0).to(device)
     output_result = torch.stack(outputs, dim=0).to(device)
     return input_result, output_result
+
+
+
+# Rewriting the implementation to compare different approaches as I suspect the first one is inefficient. Will compare and contrast
+def collate_v2(batch, padding=50256, device='cpu', max_length=None, mask_value=-100):
+    batch_max = max([len(item) + 1 for item in batch])
+    inputs = []
+    outputs = []
+
+    for item in batch:
+        new_item = item.copy()
+        new_item += [padding]
+
+        padded = (new_item + [padding] *(batch_max - len(new_item)))
+        input_val = torch.tensor(padded[:-1])
+        output_val = torch.tensor(padded[1:])
+
+
+        mask = output_val == padding
+        indices = torch.nonzero(mask).squeeze()
+
+        if indices.numel() > 1:
+            output_val[indices[1:]] = mask_value
+
+        if max_length is not None:
+            input_val = input_val[:max_length]
+            output_val = output_val[:max_length]
+
+        inputs.append(input_val)
+        outputs.append(output_val)
+
+    inputs_tensor = torch.stack(inputs).to(device)
+    targets_tensor = torch.stack(outputs).to(device)
+    return inputs_tensor, targets_tensor

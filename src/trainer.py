@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import json 
 from train.train_utils import finetune_helper
-from train.instruction_data import TrainData, collate
+from train.instruction_data import TrainData, collate, collate_v2
 from torch.utils.data import DataLoader
 from functools import partial
 import tiktoken
@@ -13,8 +13,11 @@ from tools.load_weights import load_weights_into_gpt
 from tools.utils import calc_loss_loader, generate_text, text_to_token_ids, token_ids_to_text
 
 
+# For local vs remote training
+LOCAL_INSTRUCTIONS = "./train/data/instructions-finetune-local.json"
+REMOTE_INSTRUCTIONS = "./train/data/instructions-finetune.json"
 
-with open("./train/data/instructions-finetune.json","r") as f:
+with open(LOCAL_INSTRUCTIONS,"r") as f:
     data = json.load(f)
 
 
@@ -52,18 +55,18 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # device = torch.device("mps")"
 
 
-collate_v1 = partial(collate, device=device, max_length=1024)   
+collate_v3 = partial(collate_v2, device=device, max_length=1024)   
 
 
 train_dataset = TrainData(train_data, tokenizer)
-train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, collate_fn=collate_v1, num_workers=NUM_WORKERS)
+train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, collate_fn=collate_v3, num_workers=NUM_WORKERS)
 
 
 val_dataset = TrainData(validate_data, tokenizer)
-val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_v1, num_workers=NUM_WORKERS)
+val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_v3, num_workers=NUM_WORKERS)
 
 test_dataset = TrainData(test_data, tokenizer)
-test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_v1, num_workers=NUM_WORKERS)
+test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_v3, num_workers=NUM_WORKERS)
 
 # settings, params = download_and_load_gpt("774M", WEIGHTS_PATH)
 settings, params = load_settings_and_params(WEIGHTS_PATH + MODEL_SIZE)
