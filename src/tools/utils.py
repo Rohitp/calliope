@@ -104,10 +104,10 @@ def generate_text(model, indexes, max_new_tokens, context_size, temperature=0.0,
 # which is a measure of how well the model predicts the next token in the sequence
 # it's torch.exp(loss).
 # if perplexity is 45678, it means the model is unsure of which of the 45678 tokens to predict next
-def cross_entropy_loss(input, target, model, device):
-    input = input.to(device)
+def cross_entropy_loss(inputs, target, model, device):
+    inputs = inputs.to(device)
     target = target.to(device)
-    logits = model(input)
+    logits = model(inputs)
     loss = nn.functional.cross_entropy(logits.flatten(0, 1), target.flatten())
     return loss
 

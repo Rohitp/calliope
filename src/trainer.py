@@ -26,12 +26,14 @@ NUM_WORKERS = 0
 BATCH_SIZE = 8
 WEIGHTS_PATH = './weights/'
 MODEL_SIZE = "774M"
+# MODEL_SIZE = "124M"
 NUM_EPOCHS = 5
 EVAL_FREQ = 5
 EVAL_ITER = 5
 
 
 model_name = "gpt2-large-774M" # Change this to the desired model size
+# model_name = "gpt2-small-124M" # Change this to the desired model size
 MODEL_CONFIG = CALLIOPE_CONFIG_124M.copy()
 MODEL_CONFIG.update(model_configs[model_name])
 
@@ -72,8 +74,8 @@ val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, colla
 test_dataset = TrainData(test_data, tokenizer)
 test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_v3, num_workers=NUM_WORKERS)
 
-# settings, params = download_and_load_gpt("774M", WEIGHTS_PATH)
-settings, params = load_settings_and_params(WEIGHTS_PATH + MODEL_SIZE)
+settings, params = download_and_load_gpt(MODEL_SIZE, WEIGHTS_PATH)
+# settings, params = load_settings_and_params(WEIGHTS_PATH + MODEL_SIZE)
 
 
 model = Polymnia(MODEL_CONFIG)
