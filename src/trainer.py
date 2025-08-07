@@ -23,12 +23,12 @@ with open(REMOTE_INSTRUCTIONS,"r") as f:
 
 
 NUM_WORKERS = 0
-BATCH_SIZE = 8
+BATCH_SIZE = 4 #changing it to 4 for runpods A100. 8 throws an OOM
 WEIGHTS_PATH = './weights/'
 MODEL_SIZE = "774M"
 # MODEL_SIZE = "124M"
-NUM_EPOCHS = 5
-EVAL_FREQ = 5
+NUM_EPOCHS = 4 
+EVAL_FREQ = 50
 EVAL_ITER = 5
 
 
@@ -61,7 +61,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # device = torch.device("mps")"
 
 
-collate_v3 = partial(collate_v2, device=device, max_length=1024)   
+# max_length = 512 for an A100 on runpod. Ideally its 1024
+collate_v3 = partial(collate_v2, device=device, max_length=512)   
 
 
 train_dataset = TrainData(train_data, tokenizer)
