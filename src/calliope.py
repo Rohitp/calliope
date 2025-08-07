@@ -12,8 +12,7 @@ import tiktoken
 
 
 
-with open("../text/alice.txt", "r", encoding="utf-8") as f:
-    text = f.read()
+
 
 
 train_ratio = 0.9
@@ -53,23 +52,20 @@ optimizer = torch.optim.AdamW(model.parameters(), lr=MODEL_CONFIG["learning_rate
 tokenizer = tiktoken.get_encoding("gpt2")
 
 
-weights_path = './weights/124M'
+weights_path = './weights/774M'
 
 # Load params and test
 settings, params = load_settings_and_params(weights_path)
 
 
 load_weights_into_gpt(model, params)
+torch.load("weights/model-774m-al00-v1.pth", model.state_dict())
 model.to(device)
 
 token_ids = generate_text(model, text_to_token_ids("The second ammendment", tokenizer).to(device), 25, MODEL_CONFIG["context_length"], temperature=1.5, top_k=50, eos_id=None)
 print(token_ids_to_text(token_ids, tokenizer))
 
 
-# download_and_load_gpt(model, params)
-
-# for name, param in model.named_parameters():
-#     print(f"{name}: {param.shape} ({param.numel():,} params)")
 
 
 
